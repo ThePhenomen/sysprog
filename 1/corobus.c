@@ -237,6 +237,7 @@ coro_bus_channel_close(struct coro_bus *bus, int channel)
 
     	free(ch->data.data);
     	free(ch);
+		bus->channels[channel] = NULL;
 
     	bus->channel_count--;
 
@@ -244,9 +245,6 @@ coro_bus_channel_close(struct coro_bus *bus, int channel)
         	free(bus->channels);
         	bus->channels = NULL;
 		bus->max_channel_count=0;
-    	} 
-	else {
-        	bus->channels = realloc(bus->channels, bus->channel_count * sizeof(*bus->channels));
     	};
 
 }
@@ -305,17 +303,16 @@ coro_bus_try_send(struct coro_bus *bus, int channel, unsigned data)
 int
 coro_bus_recv(struct coro_bus *bus, int channel, unsigned *data)
 {	
-
+	
 	if (!bus || channel < 0 || !bus->channels) {
         	coro_bus_errno_set(CORO_BUS_ERR_NO_CHANNEL);
         	return -1;
     	};
-
+		
     	struct coro_bus_channel *ch = bus->channels[channel];
 
     	while (ch->data.size == 0) {
        		wakeup_queue_suspend_this(&ch->recv_queue);
-		
 		if (!bus->channels) {
             		coro_bus_errno_set(CORO_BUS_ERR_NO_CHANNEL);
             		return -1;
@@ -380,9 +377,9 @@ coro_bus_broadcast(struct coro_bus *bus, unsigned data)
         	int can_send_all = 1;
 
         	for (int i = 0; i < bus->max_channel_count; i++) {
+				if (!bus->channels[i])
+					continue;
             		struct coro_bus_channel *ch = bus->channels[i];
-		        if (!ch) 
-				continue; 
 
             		if (ch->data.size >= ch->size_limit) {
                 		can_send_all = 0;
