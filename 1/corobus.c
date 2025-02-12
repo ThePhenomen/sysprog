@@ -237,7 +237,7 @@ coro_bus_channel_close(struct coro_bus *bus, int channel)
 
     	free(ch->data.data);
     	free(ch);
-		bus->channels[channel] = NULL;
+	bus->channels[channel] = NULL;
 
     	bus->channel_count--;
 
@@ -313,6 +313,7 @@ coro_bus_recv(struct coro_bus *bus, int channel, unsigned *data)
 
     	while (ch->data.size == 0) {
        		wakeup_queue_suspend_this(&ch->recv_queue);
+		
 		if (!bus->channels) {
             		coro_bus_errno_set(CORO_BUS_ERR_NO_CHANNEL);
             		return -1;
@@ -321,9 +322,8 @@ coro_bus_recv(struct coro_bus *bus, int channel, unsigned *data)
     	};
 
     	*data = ch->data.data[0];
-	if (ch->data.size > 1) {
+	if (ch->data.size > 1)
     		memmove(&ch->data.data[0], &ch->data.data[1], (ch->data.size - 1) * sizeof(unsigned));
-	};
 	ch->data.size--;
 
     	if (!rlist_empty(&ch->send_queue.coros))
@@ -377,8 +377,10 @@ coro_bus_broadcast(struct coro_bus *bus, unsigned data)
         	int can_send_all = 1;
 
         	for (int i = 0; i < bus->max_channel_count; i++) {
-				if (!bus->channels[i])
-					continue;
+			
+			if (!bus->channels[i])
+				continue;
+			
             		struct coro_bus_channel *ch = bus->channels[i];
 
             		if (ch->data.size >= ch->size_limit) {
@@ -399,9 +401,11 @@ coro_bus_broadcast(struct coro_bus *bus, unsigned data)
     	};
 
     	for (int i = 0; i < bus->max_channel_count; i++) {
-        	struct coro_bus_channel *ch = bus->channels[i];
-       	 	if (!ch) 
+
+		if (!bus->channels[i])
 			continue;
+		
+        	struct coro_bus_channel *ch = bus->channels[i];
 
         	ch->data.data[ch->data.size++] = data;
         	sent++;
@@ -424,7 +428,8 @@ coro_bus_try_broadcast(struct coro_bus *bus, unsigned data)
 	int sent = 0;
 
     	for (int i = 0; i < bus->max_channel_count; i++) {
-        	if (!bus->channels[i]) 
+        	
+		if (!bus->channels[i]) 
 			continue;
 
         	if (bus->channels[i]->data.size >= bus->channels[i]->size_limit) {
@@ -435,9 +440,11 @@ coro_bus_try_broadcast(struct coro_bus *bus, unsigned data)
     	};
 
     	for (int i = 0; i < bus->max_channel_count; i++) {
-        	struct coro_bus_channel *ch = bus->channels[i];
-        	if (!ch) 
+
+		if (!bus->channels[i])
 			continue;
+		
+        	struct coro_bus_channel *ch = bus->channels[i];
 
         	ch->data.data[ch->data.size++] = data;
         	sent++;
