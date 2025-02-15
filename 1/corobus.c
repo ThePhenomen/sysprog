@@ -207,10 +207,9 @@ coro_bus_channel_open(struct coro_bus *bus, size_t size_limit)
     	};
 
     	bus->channels = new_channels;
-    	bus->channels[bus->channel_count] = channel;
-	bus->max_channel_count++;
-
-    	return bus->channel_count++;
+    	bus->channels[bus->max_channel_count] = channel;
+	bus->channel_count++;
+    	return bus->max_channel_count++;
 }
 
 void
@@ -340,6 +339,7 @@ coro_bus_try_recv(struct coro_bus *bus, int channel, unsigned *data)
         	coro_bus_errno_set(CORO_BUS_ERR_NO_CHANNEL);
         	return -1;
    	};
+	
 
    	struct coro_bus_channel *ch = bus->channels[channel];
 
