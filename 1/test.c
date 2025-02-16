@@ -174,11 +174,13 @@ test_channel_reopen(void)
 	coro_bus_channel_close(bus, c2);
 
 	unit_msg("open and close many times");
-	for (int i = 0; i < 100; ++i) {
-		c1 = coro_bus_channel_open(bus, 2);
-		unit_assert(c1 >= 0);
-		coro_bus_channel_close(bus, c1);
+	c1 = coro_bus_channel_open(bus, 2);
+	for (int i = 0; i < 1000; ++i) {
+		c2 = coro_bus_channel_open(bus, 2);
+		unit_assert(c2 >= 0);
+		coro_bus_channel_close(bus, c2);
 	}
+	coro_bus_channel_close(bus, c1);
 
 	coro_bus_delete(bus);
 	unit_test_finish();

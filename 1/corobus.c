@@ -178,7 +178,7 @@ coro_bus_channel_open(struct coro_bus *bus, size_t size_limit)
         	coro_bus_errno_set(CORO_BUS_ERR_NO_CHANNEL);
         	return -1;
     	};
-
+		
     	struct coro_bus_channel *channel = calloc(1, sizeof(*channel));
     	if (!channel) {
         	coro_bus_errno_set(CORO_BUS_ERR_NO_CHANNEL);
@@ -197,8 +197,8 @@ coro_bus_channel_open(struct coro_bus *bus, size_t size_limit)
     	channel->data.capacity = size_limit;
     	rlist_create(&channel->send_queue.coros);
     	rlist_create(&channel->recv_queue.coros);
-
-    	struct coro_bus_channel **new_channels = realloc(bus->channels, (bus->channel_count + 1) * sizeof(*bus->channels));
+		
+    	struct coro_bus_channel **new_channels = realloc(bus->channels, (bus->max_channel_count + 1) * sizeof(*bus->channels));
     	if (!new_channels) {
         	free(channel->data.data);
         	free(channel);
