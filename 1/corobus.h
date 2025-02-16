@@ -40,7 +40,19 @@ void
 coro_bus_delete(struct coro_bus *bus);
 
 /**
- * Create a channel inside the bus.
+ * Create a channel.
+ * @param bus The bus to create the channel in.
+ * @param size_limit Maximum messages a channel can hold in memory
+ *     at once.
+ * @param index Descriptor of the channel
+ * @retval >=0 Descriptor of the channel. It must be passed to the
+ *     send/recv functions.
+ */
+int
+create_channel(struct coro_bus *bus, size_t index, size_t size_limit);
+
+/**
+ * Open a channel inside the bus.
  * @param bus The bus to create the channel in.
  * @param size_limit Maximum messages a channel can hold in memory
  *     at once.
