@@ -174,38 +174,38 @@ coro_bus_delete(struct coro_bus *bus)
 int 
 create_channel(struct coro_bus *bus, size_t index, size_t size_limit) 
 {	
-    struct coro_bus_channel *channel = calloc(1, sizeof(*channel));
-    if (!channel) {
-        coro_bus_errno_set(CORO_BUS_ERR_NO_CHANNEL);
-        return -1;
-    };
-
-    channel->data.data = calloc(size_limit, sizeof(unsigned));
-    if (!channel->data.data) {
-        free(channel);
-        coro_bus_errno_set(CORO_BUS_ERR_NO_CHANNEL);
-        return -1;
-    };
-
-    channel->size_limit = size_limit;
-    channel->data.size = 0;
-    channel->data.capacity = size_limit;
-
-    rlist_create(&channel->send_queue.coros);
-    rlist_create(&channel->recv_queue.coros);
+	struct coro_bus_channel *channel = calloc(1, sizeof(*channel));
+	if (!channel) {
+		coro_bus_errno_set(CORO_BUS_ERR_NO_CHANNEL);
+		return -1;
+	};
+	
+	channel->data.data = calloc(size_limit, sizeof(unsigned));
+	if (!channel->data.data) {
+		free(channel);
+		coro_bus_errno_set(CORO_BUS_ERR_NO_CHANNEL);
+		return -1;
+	};
+	
+	channel->size_limit = size_limit;
+	channel->data.size = 0;
+	channel->data.capacity = size_limit;
+	
+	rlist_create(&channel->send_queue.coros);
+	rlist_create(&channel->recv_queue.coros);
     
 	bus->channels[index] = channel;
 	bus->channel_count++;
-    return index;
+	return index;
 }
 
 int 
 coro_bus_channel_open(struct coro_bus *bus, size_t size_limit) 
 {
-    if (!bus || size_limit == 0) {
-        coro_bus_errno_set(CORO_BUS_ERR_NO_CHANNEL);
-        return -1;
-    };
+	if (!bus || size_limit == 0) {
+		coro_bus_errno_set(CORO_BUS_ERR_NO_CHANNEL);
+		return -1;
+	};
     
 	for (int i = 0; i < bus->max_channel_count; ++i) {
 		if (bus->channels[i] == NULL ) {
@@ -213,14 +213,14 @@ coro_bus_channel_open(struct coro_bus *bus, size_t size_limit)
 		};
 	};
 	
-    struct coro_bus_channel **new_channels = realloc(bus->channels, (bus->max_channel_count + 1) * sizeof(*bus->channels));
+	struct coro_bus_channel **new_channels = realloc(bus->channels, (bus->max_channel_count + 1) * sizeof(*bus->channels));
 	if (!new_channels) {
 		coro_bus_errno_set(CORO_BUS_ERR_NO_CHANNEL);
 		return -1;
 	};
 
 	bus->channels = new_channels;
-    return create_channel(bus, bus->max_channel_count++, size_limit);
+	return create_channel(bus, bus->max_channel_count++, size_limit);
 }
 
 void
