@@ -159,7 +159,6 @@ for test in tests:
     p = open_new_shell()
     try:
         for cmd in test[0]:
-            print(f'{cmd}')
             p.stdin.write(cmd.encode() + b'\n')
         p.stdin.close()
         p.wait(1)
