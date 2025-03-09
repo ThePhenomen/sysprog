@@ -31,11 +31,11 @@ unquote(const char *str)
 {
     size_t len = strlen(str);
     if (len < 2) 
-				return strdup(str);
+    	return strdup(str);
 
     char *result = (char *)calloc(len + 1, sizeof(char));
     if (!result) 
-				return NULL;
+    	return NULL;
 
     char quote_char = 0;
     int j = 0;
@@ -115,22 +115,22 @@ is_expr_logical(const struct expr *e)
 static bool 
 is_cd_com(const struct expr *e) 
 {
-		assert(e != NULL);
-		return strcmp(e->cmd.exe, "cd") == 0;
+    assert(e != NULL);
+    return strcmp(e->cmd.exe, "cd") == 0;
 }
 
 static bool 
 is_exit_com(const struct expr *e) 
 {
-		assert(e != NULL);
-		return strcmp(e->cmd.exe, "exit") == 0;
+    assert(e != NULL);
+    return strcmp(e->cmd.exe, "exit") == 0;
 }
 
 static bool 
 is_builtin_com(const struct expr *e)
 {
-		assert(e != NULL);
-		return is_exit_com(e) || is_cd_com(e);
+    assert(e != NULL);
+    return is_exit_com(e) || is_cd_com(e);
 }
 
 static void 
@@ -341,7 +341,7 @@ static struct com_result
 execute_command_line(const struct command_line *line) 
 {
     if (line->head == NULL) 
-				return exit_from_command(0, 0);
+    	return exit_from_command(0, 0);
 
     struct expr *iter = line->head;
     struct expr *operand_start = iter;
