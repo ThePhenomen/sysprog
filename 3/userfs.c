@@ -90,7 +90,7 @@ find_file(const char *name)
 static int 
 is_writable(const struct filedesc *desc) 
 {
-	return desc->flags == 0 || desc->flags & (UFS_CREATE | UFS_WRITE_ONLY | UFS_READ_WRITE);
+    return desc->flags == 0 || desc->flags & (UFS_CREATE | UFS_WRITE_ONLY | UFS_READ_WRITE);
 }
 
 static int 
@@ -193,14 +193,14 @@ ufs_errno()
 int 
 ufs_open(const char *filename, int flags) 
 {
-	if (!filename) {
+    if (!filename) {
         ufs_error_code = UFS_ERR_NO_FILE;
         return -1;
-	}
+    }
 
-	struct file *f = find_file(filename);
+    struct file *f = find_file(filename);
 
-	if (!f && (flags & UFS_CREATE)) {
+    if (!f && (flags & UFS_CREATE)) {
         f = malloc(sizeof(struct file));
         if (!f) {
             ufs_error_code = UFS_ERR_NO_MEM;
@@ -221,47 +221,48 @@ ufs_open(const char *filename, int flags)
         f->prev = NULL;
         if (file_list)
             file_list->prev = f;
+	    
         file_list = f;
-	}
+    }
     
-	if (!f) {
+    if (!f) {
         ufs_error_code = UFS_ERR_NO_FILE;
         return -1;
-	}
+    }
 
-	if (f->deleted && (flags & UFS_CREATE)) {
+    if (f->deleted && (flags & UFS_CREATE)) {
         f->deleted = 0;
         f->block_list = f->last_block = NULL;
         f->refs = 0;
-	}
+    }
 
-	if (file_descriptor_count == file_descriptor_capacity) {
+    if (file_descriptor_count == file_descriptor_capacity) {
         int new_capacity = file_descriptor_capacity ? file_descriptor_capacity * 2 : 10;
         struct filedesc **new_descriptors = realloc(file_descriptors, new_capacity * sizeof(struct filedesc *));
         if (!new_descriptors) {
-                ufs_error_code = UFS_ERR_NO_MEM;
-                return -1;
+            ufs_error_code = UFS_ERR_NO_MEM;
+            return -1;
         }
         
         file_descriptors = new_descriptors;
         file_descriptor_capacity = new_capacity;
-	}
+    }
 
-	struct filedesc *file_desc = malloc(sizeof(struct filedesc));
-	if (!file_desc) {
+    struct filedesc *file_desc = malloc(sizeof(struct filedesc));
+    if (!file_desc) {
         ufs_error_code = UFS_ERR_NO_MEM;
         return -1;
-	}
+    }
 
-	file_desc->file = f;
-	file_desc->block_number = 0;
-	file_desc->block_offset = 0;
-	file_desc->flags = flags & (UFS_READ_ONLY | UFS_WRITE_ONLY | UFS_READ_WRITE);
+    file_desc->file = f;
+    file_desc->block_number = 0;
+    file_desc->block_offset = 0;
+    file_desc->flags = flags & (UFS_READ_ONLY | UFS_WRITE_ONLY | UFS_READ_WRITE);
 
-	file_descriptors[file_descriptor_count] = file_desc;
-	f->refs++;
+    file_descriptors[file_descriptor_count] = file_desc;
+    f->refs++;
 
-	return file_descriptor_count++;
+    return file_descriptor_count++;
 }
 
 ssize_t 
@@ -328,22 +329,22 @@ ufs_write(int file_desc, const char *buf, size_t size)
 ssize_t 
 ufs_read(int file_desc, char *buf, size_t size) 
 {
-	struct filedesc *desc = ufs_find_filedesc(file_desc);
+    struct filedesc *desc = ufs_find_filedesc(file_desc);
 
-	if (validate_desc(desc, is_readable) != 0)
+    if (validate_desc(desc, is_readable) != 0)
         return -1;
 
-	struct block *file_block = desc->file->block_list;
-	if (validate_empty_file(file_block) == 0) 
+    struct block *file_block = desc->file->block_list;
+    if (validate_empty_file(file_block) == 0) 
         return 0;
 
-	for (int i = 0; i < desc->block_number; ++i) {
+    for (int i = 0; i < desc->block_number; ++i) {
         file_block = file_block->next;
         if (validate_empty_file(file_block) == 0) 
             return 0;
     }
 
-	ssize_t total_read = 0;
+    ssize_t total_read = 0;
     char *dest = buf;
 
     while (size) {
@@ -368,8 +369,8 @@ ufs_read(int file_desc, char *buf, size_t size)
         size -= read_data_size;
     }
 
-	ufs_error_code = UFS_ERR_NO_ERR;
-	return total_read;
+    ufs_error_code = UFS_ERR_NO_ERR;
+    return total_read;
 }
 
 int 
