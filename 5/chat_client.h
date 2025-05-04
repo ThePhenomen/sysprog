@@ -9,7 +9,7 @@ struct chat_client;
  * initialize it.
  */
 struct chat_client *
-chat_client_new(const char *name);
+chat_client_new();
 
 /** Free all client's resources. */
 void

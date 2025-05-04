@@ -1,5 +1,5 @@
 #pragma once
-
+#include <stdbool.h>
 /**
  * Here you should specify which features do you want to implement via macros:
  * If you want to enable author name support, do:
@@ -14,7 +14,7 @@
  * used by tests.
  */
 #define NEED_AUTHOR 0
-#define NEED_SERVER_FEED 0
+#define NEED_SERVER_FEED 1
 
 enum chat_errcode {
 	CHAT_ERR_INVALID_ARGUMENT = 1,
@@ -39,6 +39,7 @@ struct chat_message {
 #endif
 	/** 0-terminate text. */
 	char *data;
+	bool is_server_message;
 
 	/* PUT HERE OTHER MEMBERS */
 };
