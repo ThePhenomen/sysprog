@@ -117,12 +117,13 @@ client_update_events(struct chat_client *client)
 }
 
 struct chat_client*
-chat_client_new() 
+chat_client_new(const char *name) 
 {
     struct chat_client *client = calloc(1, sizeof(*client));
     if (!client) 
         return NULL;
 
+    (void)name;
     client->socket = -1;
     client->epoll_fd = -1;
     client->connected = false;
